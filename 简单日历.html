@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<style type="text/css">
+			#calendary {
+				margin: 0 auto;
+				width: 300px;
+				height: 300px;
+			}
+		</style>
+	</head>
+	<body>
+		<select id="year-select">
+		</select>
+
+		<select id="month-select">
+		</select>
+
+		<!--在这里显示日历-->
+		<div id="calendary">
+			<!--定义列表-->
+			<table id="tbcal">
+				<tr>
+					<td>日</td>
+					<td>一</td>
+					<td>二</td>
+					<td>三</td>
+					<td>四</td>
+					<td>五</td>
+					<td>六</td>
+				</tr>
+		</div>
+
+		<script type="text/javascript">
+			window.onload = function() {
+				initial()
+				document.getElementById("year-select").onchange = main
+				document.getElementById("month-select").onchange = main
+				main()
+			}		
+			
+			// 主函数
+			function main() {
+				//  判断闰年
+				flag = ifRun()
+				var day_month = [31, flag, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+				show(day_month)
+			}
+			
+			// 打印日历
+			function show(day_month){
+				var year = Number(document.getElementById("year-select").value)
+				var month = Number(document.getElementById("month-select").value)
+				var d = new Date()
+				// 获取当前月份第一天对应周几
+				var day_week = FristWeek(year, month - 1)
+				// 当月打印几行
+				var rows = Math.ceil((day_month[month - 1] + day_week) / 7)
+				var k = 0
+				
+				var table = document.getElementById("tbcal")
+				while (table.rows.length > 1) {
+					table.deleteRow(1)
+				}
+				
+				for (var i = 0; i < rows; i++) {
+					var row = table.insertRow(i + 1)
+					for (var j = 0; j < 7; j++) {
+						var cell = row.insertCell(j)
+						k++
+						if (k <= day_week || k > day_month[month - 1] + day_week) {
+							cell.innerHTML = "";
+						} else {
+							cell.innerHTML = k - day_week;
+						}
+					}
+				}
+			}
+
+			// 判断闰年
+			function ifRun(year) {
+				//闰年能被4整除且不能被100整除，或能被400整除。
+				if ((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0) {
+					return 29
+				} else {
+					return 28
+				}
+			}
+
+			// 判断某月某日第第一天是星期几
+			function FristWeek(year, month) {
+				var fristWeek = new Date(year, month, 1) // 月份是0-11，
+				return fristWeek.getDay()
+			}
+
+			// 将年份和月份赋值到下拉框
+			function initial() {
+				var date = new Date()
+				var now_year = date.getFullYear() // 获取当前月份
+				var year_select = document.getElementById("year-select")
+				var month_select = document.getElementById("month-select")
+				// 将前后七十年的年份放进年下拉菜单
+				for (var i = now_year; i >= now_year - 70; i--) {
+					var opt_year = document.createElement("option")
+					opt_year.value = i
+					opt_year.innerText = i
+					year_select.appendChild(opt_year)
+				}
+				// 将十二个月份放入月下拉菜单中
+				for (var i = 1; i <= 12; i++) {
+					var opt_month = document.createElement('option')
+					opt_month.value = i
+					opt_month.innerText = i
+					month_select.appendChild(opt_month)
+				}
+			}
+		</script>
+	</body>
+</html>
